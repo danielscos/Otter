@@ -1,12 +1,9 @@
-# Folders
 .gradle/
 build/
 captures/
 
-# Files
 local.properties
 
-# Other
 .DS_Store
 .idea/
 *.iml
