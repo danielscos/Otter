@@ -1,10 +1,13 @@
 package com.example.otter
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -105,58 +108,80 @@ fun DownloaderScreen(
         }
 
         // status and progress
-        if (state.statusText.isNotBlank() || state.isLoading) {
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
+        // transition Loading -> Success
+        AnimatedContent(
+            targetState = state.isDownloadComplete,
+            transitionSpec = {
+                if (targetState) {
+                    // transition to Success:
+                    // wait 500ms total before showing checkmark
+                    (fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            delayMillis = 500
+                        )
+                    ) + scaleIn(initialScale = 0.8f, animationSpec = tween(300, delayMillis = 500)))
+                        .togetherWith(
+                            fadeOut(animationSpec = tween(durationMillis = 300))
+                        )
+                } else {
+                    fadeIn().togetherWith(fadeOut())
+                }
+            },
+            label = "DownloadStatus"
+        ) {
+            isComplete ->
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // shows during download
-                AnimatedVisibility(
-                    visible = state.isLoading && !state.isDownloadComplete,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    Column(horizontalAlignment = Alignment.End) {
-                        if (state.progress > 0) {
-                            LinearProgressIndicator(
-                                progress = { state.progress },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(8.dp),
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                            )
-                            Text(
-                                text = "${(state.progress * 100).toInt()}%",
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        } else {
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(8.dp),
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
+                if (isComplete) {
+                        // success icon
+                        Icon(
+                            imageVector = Icons.Rounded.CheckCircle,
+                            contentDescription = "Download Complete",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(64.dp).offset(y = (-6).dp)
+                        )
+                } else {
+                    // progress bar
+
+                    // keep the layour space reserved or handle empty state
+
+                    if (state.isLoading) {
+                        Column(horizontalAlignment = Alignment.End) {
+                            if (state.progress > 0) {
+                                LinearProgressIndicator(
+                                    progress = { state.progress },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp),
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                )
+                                Text(
+                                    text = "${(state.progress * 100).toInt()}%",
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            } else {
+                                LinearProgressIndicator(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp),
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            }
                         }
                     }
                 }
-
-                AnimatedVisibility(
-                    visible = state.isDownloadComplete,
-                    enter = scaleIn()
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.CheckCircle,
-                        contentDescription = "Download Complete",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(64.dp)
-                    )
-                }
             }
+        }
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
+        // status text
+        if (state.statusText.isNotBlank()) {
             Text(
                 text = state.statusText,
                 style = MaterialTheme.typography.bodyMedium,
