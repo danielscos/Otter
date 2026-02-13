@@ -20,7 +20,16 @@ class MyApplication : Application() {
                 // unpacking python + executables
                 YoutubeDL.getInstance().init(applicationContext)
                 FFmpeg.getInstance().init(applicationContext)
-                Log.d("MyApplication", "engine initialized :3")
+
+                // force latest yt-dlp binary
+                Log.d("Otter", "Checking for engine updates")
+                val result = YoutubeDL.getInstance().updateYoutubeDL(applicationContext, YoutubeDL.UpdateChannel.NIGHTLY)
+
+                if (result != null) {
+                    Log.d("otter", "Update successful.\nNew version: ${result}")
+                } else {
+                    Log.d("otter", "Engine already up to date.")
+                }
 
             } catch (e: YoutubeDLException) {
                 Log.e("MyApplication", "error initializing engine :<\n", e)
