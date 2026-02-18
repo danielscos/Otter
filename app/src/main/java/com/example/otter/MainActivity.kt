@@ -25,18 +25,18 @@ class MainActivity : ComponentActivity() {
         val repository = DownloadRepository(applicationContext)
 
         // initialize ViewModel using factory
-        val viewModel = ViewModelProvider(this, object: ViewModelProvider.Factory {
-            override fun <T: ViewModel> create(modelClass: Class<T>): T {
+        val viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return DownloaderViewModel(repository) as T
             }
         })[DownloaderViewModel::class.java]
 
-        // handle share intent from tiktok/instagram
+        // handle share intent from TikTok/Instagram
         var sharedUrl: String? = null
 
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
-            // tiktok shares text like check this out crap
+            // TikTok shares text like "check this out" crap
             val fullText = intent.getStringExtra(Intent.EXTRA_TEXT)
 
             sharedUrl = fullText?.let { text ->

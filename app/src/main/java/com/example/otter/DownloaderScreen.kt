@@ -2,7 +2,6 @@ package com.example.otter
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,9 +27,9 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun DownloaderScreen(
+    modifier: Modifier = Modifier,
     viewModel: DownloaderViewModel,
-    initialUrl: String? = null,
-    modifier: Modifier = Modifier
+    initialUrl: String? = null
 ) {
     var urlInput by remember { mutableStateOf(initialUrl ?: "") }
     val state by viewModel.state.collectAsState()
@@ -73,7 +72,7 @@ fun DownloaderScreen(
             trailingIcon = {
                 IconButton(onClick = {
                     // paste from clipboard
-                    clipboardManager.getText()?.text?.let { urlInput = it }
+                    clipboardManager.getText()?.let { urlInput = it.text }
                 }) {
                     Icon(
                         Icons.Rounded.ContentPaste,
@@ -98,10 +97,10 @@ fun DownloaderScreen(
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = 2.dp
+                    strokeWidth = 4.dp
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-                Text("processing...")
+                Text("Processing...")
             } else {
                 Text("Download", fontSize = 18.sp)
             }
@@ -117,6 +116,7 @@ fun DownloaderScreen(
                 if (targetState) {
                     // transition to Success:
                     // wait 500ms total before showing checkmark
+
                     (fadeIn(
                         animationSpec = tween(
                             durationMillis = 300,
@@ -131,20 +131,21 @@ fun DownloaderScreen(
                 }
             },
             label = "DownloadStatus"
-        ) {
-            isComplete ->
+        ) { isComplete ->
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (isComplete) {
-                        // success icon
-                        Icon(
-                            imageVector = Icons.Rounded.CheckCircle,
-                            contentDescription = "Download Complete",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(64.dp).offset(y = (-6).dp)
-                        )
+                    // success icon
+                    Icon(
+                        imageVector = Icons.Rounded.CheckCircle,
+                        contentDescription = "Download Complete",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(64.dp)
+                            .offset(y = (-6).dp)
+                    )
                 } else {
                     // progress bar
 

@@ -14,7 +14,7 @@ import java.io.File
 import java.io.FileInputStream
 
 /**
- *                                   author:
+ *                                       author:
  *
  * ▓█████▄  ▄▄▄       ███▄    █  ██▓▓█████  ██▓      ██████  ▄████▄   ▒█████    ██████
  * ▒██▀ ██▌▒████▄     ██ ▀█   █ ▓██▒▓█   ▀ ▓██▒    ▒██    ▒ ▒██▀ ▀█  ▒██▒  ██▒▒██    ▒
@@ -27,7 +27,6 @@ import java.io.FileInputStream
  *    ░          ░  ░         ░  ░     ░  ░    ░  ░      ░  ░ ░          ░ ░        ░
  *  ░                                                       ░
  */
-
 class DownloadRepository(private val context: Context) {
 
     suspend fun downloadVideo(
@@ -43,10 +42,6 @@ class DownloadRepository(private val context: Context) {
             request.addOption("-o", "${appCacheDir.absolutePath}/%(title)s.%(ext)s")
             request.addOption("-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best")
             request.addOption("--no-mtime")
-            request.addOption("--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-            request.addOption("--referer", "https://www.tiktok.com/")
-            request.addOption("--force-ipv4")
-            request.addOption("--no-check-certificates")
 
             val versionRequest = YoutubeDLRequest("")
             versionRequest.addOption("--version")
